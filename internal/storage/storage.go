@@ -69,6 +69,7 @@ func (s *InMemory) Save() error {
 	return nil
 }
 
+// change function name
 func getMD5Hash(url string) string {
 	hash := sha256.Sum256(([]byte(url)))
 	//hash := md5.Sum([]byte(url))
