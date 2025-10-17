@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 	"urlshortner/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
@@ -14,26 +16,26 @@ func NewUserHandler(u *service.UrlShortener) *UserHandler {
 	return &UserHandler{user: u}
 }
 
-func (u *UserHandler) CreateShortUrl(w http.ResponseWriter, r *http.Request) {
-	url := r.URL.String()
+func (u *UserHandler) CreateShortUrl(c *gin.Context) {
+	url := c.Request.URL.String()
 	short, err := u.user.Create(url)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		c.Writer.Write([]byte(err.Error()))
 	}
-	w.Write([]byte(short))
+	c.Writer.Write([]byte(short))
 
 }
 
-func (u *UserHandler) GetLongUrl(w http.ResponseWriter, r *http.Request) {
-	url := r.URL.String()
+func (u *UserHandler) GetLongUrl(c *gin.Context) {
+	url := c.Request.URL.String()
 	parts := strings.Split(url, "/")
 	long, err := u.user.Get(parts[len(parts)-1])
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		c.Writer.Write([]byte(err.Error()))
 	}
-	http.Redirect(w, r, long, http.StatusPermanentRedirect)
+	c.Redirect(http.StatusPermanentRedirect, long)
 }
 
-func (u *UserHandler) DeleteUrl(w http.ResponseWriter, r *http.Request) {
+func (u *UserHandler) DeleteUrl(c *gin.Context) {
 
 }

@@ -5,6 +5,8 @@ import (
 	"urlshortner/internal/logger"
 	"urlshortner/internal/service"
 	"urlshortner/internal/storage"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -13,6 +15,15 @@ func main() {
 	storage := storage.NewInMemory()
 	service := service.NewUrlShortner(logger, storage)
 
-	_ = handlers.NewUserHandler(service)
+	handlers := handlers.NewUserHandler(service)
+
+	router := gin.Default()
+
+	router.POST("/create", handlers.CreateShortUrl)
+	router.GET("/get", handlers.GetLongUrl)
+	router.DELETE("/delete", handlers.DeleteUrl)
+
+	//TODO: Add timeout wrapper/middleware
+	router.Run()
 
 }
