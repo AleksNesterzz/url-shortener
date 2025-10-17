@@ -4,12 +4,15 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"os"
+	"strings"
 )
 
 type Storage interface {
 	Get(url string) (string, error)
 	Create(url string) (string, error)
 	Delete(url string) error
+	Save() error
 }
 
 type shortUrl string
@@ -44,6 +47,25 @@ func (s *InMemory) Delete(url string) error {
 		return fmt.Errorf("no such url")
 	}
 	delete(s.cache, shortUrl(url))
+	return nil
+}
+
+func (s *InMemory) Save() error {
+	file, err := os.OpenFile("../backup.txt", os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	for k, v := range s.cache {
+		var str strings.Builder
+		str.Grow(len(k) + len(v) + 1)
+		_, err = str.WriteString(string(k) + ":" + string(v) + "\n")
+		if err != nil {
+			return err
+		}
+		file.Write([]byte(str.String()))
+	}
+
 	return nil
 }
 

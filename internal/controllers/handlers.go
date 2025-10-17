@@ -1,13 +1,16 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
-	"strings"
 	"urlshortner/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
 
+type CreateRequest struct {
+	Url string `json:"url"`
+}
 type UserHandler struct {
 	user *service.UrlShortener
 }
@@ -17,9 +20,12 @@ func NewUserHandler(u *service.UrlShortener) *UserHandler {
 }
 
 func (u *UserHandler) CreateShortUrl(c *gin.Context) {
-	val := c.Request.URL.Query()
-	url := val.Get("url")
-	short, err := u.user.Create(url)
+	var req CreateRequest
+	err := json.NewDecoder(c.Request.Body).Decode(&req)
+	if err != nil {
+		c.Writer.Write([]byte(err.Error()))
+	}
+	short, err := u.user.Create(req.Url)
 	if err != nil {
 		c.Writer.Write([]byte(err.Error()))
 	}
@@ -28,9 +34,8 @@ func (u *UserHandler) CreateShortUrl(c *gin.Context) {
 }
 
 func (u *UserHandler) GetLongUrl(c *gin.Context) {
-	url := c.Request.URL.String()
-	parts := strings.Split(url, "/")
-	long, err := u.user.Get(parts[len(parts)-1])
+	url := c.Param("id")
+	long, err := u.user.Get(url)
 	if err != nil {
 		c.Writer.Write([]byte(err.Error()))
 	}
