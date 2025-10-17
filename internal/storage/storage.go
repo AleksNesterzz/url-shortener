@@ -19,6 +19,12 @@ type InMemory struct {
 	cache map[shortUrl]longUrl
 }
 
+func NewInMemory() *InMemory {
+	return &InMemory{
+		cache: make(map[shortUrl]longUrl),
+	}
+}
+
 func (s *InMemory) Create(url string) (string, error) {
 	hash := getMD5Hash(url)
 	s.cache[shortUrl(hash)] = longUrl(url)
