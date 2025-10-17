@@ -38,6 +38,7 @@ func (u *UserHandler) GetLongUrl(c *gin.Context) {
 	long, err := u.user.Get(url)
 	if err != nil {
 		c.Writer.Write([]byte(err.Error()))
+		return
 	}
 	c.Redirect(http.StatusPermanentRedirect, long)
 }
