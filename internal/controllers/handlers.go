@@ -17,7 +17,8 @@ func NewUserHandler(u *service.UrlShortener) *UserHandler {
 }
 
 func (u *UserHandler) CreateShortUrl(c *gin.Context) {
-	url := c.Request.URL.String()
+	val := c.Request.URL.Query()
+	url := val.Get("url")
 	short, err := u.user.Create(url)
 	if err != nil {
 		c.Writer.Write([]byte(err.Error()))
