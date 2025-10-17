@@ -53,7 +53,7 @@ func (s *UrlShortener) Delete(url string) error {
 }
 
 func validateUrl(url string) bool {
-	if !strings.HasPrefix(url, "https://") || !strings.HasPrefix(url, "http://") {
+	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://") {
 		return false
 	}
 	return true

@@ -21,7 +21,7 @@ func main() {
 	handlers := handlers.NewUserHandler(service)
 
 	router := gin.Default()
-
+	//TODO: middleware auth + timeout context
 	router.POST("/create/", handlers.CreateShortUrl)
 	router.GET("/get/:id", handlers.GetLongUrl)
 	router.DELETE("/delete/:id", handlers.DeleteUrl)
