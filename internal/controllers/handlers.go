@@ -43,5 +43,7 @@ func (u *UserHandler) GetLongUrl(c *gin.Context) {
 }
 
 func (u *UserHandler) DeleteUrl(c *gin.Context) {
-
+	url := c.Param("id")
+	u.user.Delete(url)
+	c.JSON(http.StatusNoContent, gin.H{})
 }
