@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -70,7 +70,8 @@ func (s *InMemory) Save() error {
 }
 
 func getMD5Hash(url string) string {
-	hash := md5.Sum([]byte(url))
+	hash := sha256.Sum256(([]byte(url)))
+	//hash := md5.Sum([]byte(url))
 	return hex.EncodeToString(hash[:])
 
 }
