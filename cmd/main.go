@@ -24,7 +24,7 @@ func main() {
 
 	router.POST("/create/", handlers.CreateShortUrl)
 	router.GET("/get/:id", handlers.GetLongUrl)
-	router.DELETE("/delete", handlers.DeleteUrl)
+	router.DELETE("/delete/:id", handlers.DeleteUrl)
 
 	sig := make(chan os.Signal, 1)
 
