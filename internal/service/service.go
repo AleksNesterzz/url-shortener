@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+	"strings"
 	"urlshortner/internal/logger"
 	"urlshortner/internal/storage"
 )
@@ -19,6 +21,9 @@ func NewUrlShortner(logger logger.Logger, storage storage.Storage) *UrlShortener
 
 func (s *UrlShortener) Create(url string) (string, error) {
 	s.logger.Info("creating url")
+	if !validateUrl(url) {
+		return "", fmt.Errorf("invalid url")
+	}
 	short, err := s.storage.Create(url)
 	if err != nil {
 		s.logger.Error("creating url error")
@@ -45,4 +50,11 @@ func (s *UrlShortener) Delete(url string) error {
 		return err
 	}
 	return nil
+}
+
+func validateUrl(url string) bool {
+	if !strings.HasPrefix(url, "https://") || !strings.HasPrefix(url, "http://") {
+		return false
+	}
+	return true
 }

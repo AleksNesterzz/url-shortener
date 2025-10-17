@@ -38,7 +38,7 @@ func NewInMemory() *InMemory {
 			break
 		}
 		parts := strings.Split(str, ":")
-		storage[shortUrl(parts[0])] = longUrl(parts[1])
+		storage[shortUrl(parts[0])] = longUrl(parts[1] + ":" + parts[2])
 	}
 	return &InMemory{
 		cache: storage,
