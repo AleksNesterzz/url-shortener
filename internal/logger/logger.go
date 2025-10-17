@@ -21,8 +21,10 @@ func NewLogger() *StdLogger {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log := slog.New((slog.NewTextHandler(file, nil)))
+	log.Info("Start applicatiion...")
 	return &StdLogger{
-		logger: slog.New(slog.NewTextHandler(file, nil)),
+		logger: log,
 	}
 }
 
