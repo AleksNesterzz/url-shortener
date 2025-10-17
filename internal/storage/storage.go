@@ -1,9 +1,11 @@
 package storage
 
 import (
+	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 )
@@ -23,8 +25,23 @@ type InMemory struct {
 }
 
 func NewInMemory() *InMemory {
+	storage := make(map[shortUrl]longUrl)
+	file, err := os.OpenFile("../backup.txt", os.O_RDONLY, 0666)
+	if err != nil {
+		return &InMemory{cache: storage}
+	}
+	defer file.Close()
+	r := bufio.NewReader(file)
+	for {
+		str, err := r.ReadString('\n')
+		if err == io.EOF {
+			break
+		}
+		parts := strings.Split(str, ":")
+		storage[shortUrl(parts[0])] = longUrl(parts[1])
+	}
 	return &InMemory{
-		cache: make(map[shortUrl]longUrl),
+		cache: storage,
 	}
 }
 
