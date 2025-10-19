@@ -15,7 +15,7 @@ type UserHandler struct {
 	user *service.UrlShortener
 }
 
-func NewUserHandler(u *service.UrlShortener) *UserHandler {
+func New(u *service.UrlShortener) *UserHandler {
 	return &UserHandler{user: u}
 }
 

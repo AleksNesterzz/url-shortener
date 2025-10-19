@@ -14,9 +14,9 @@ import (
 )
 
 func main() {
-	logger := logger.NewLogger()
-	storage := storage.NewInMemory()
-	service := service.NewUrlShortner(logger, storage)
+	logger := logger.New()
+	storage := storage.New()
+	service := service.New(logger, storage)
 
 	handlers := handlers.NewUserHandler(service)
 

@@ -24,7 +24,7 @@ type InMemory struct {
 	cache map[shortUrl]longUrl
 }
 
-func NewInMemory() *InMemory {
+func New() *InMemory {
 	storage := make(map[shortUrl]longUrl)
 	file, err := os.OpenFile("../backup.txt", os.O_RDONLY, 0666)
 	if err != nil {

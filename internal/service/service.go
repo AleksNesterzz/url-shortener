@@ -12,7 +12,7 @@ type UrlShortener struct {
 	storage storage.Storage
 }
 
-func NewUrlShortner(logger logger.Logger, storage storage.Storage) *UrlShortener {
+func New(logger logger.Logger, storage storage.Storage) *UrlShortener {
 	return &UrlShortener{
 		logger:  logger,
 		storage: storage,
