@@ -18,7 +18,7 @@ func main() {
 	storage := storage.New()
 	service := service.New(logger, storage)
 
-	handlers := handlers.NewUserHandler(service)
+	handlers := handlers.New(service)
 
 	router := gin.Default()
 	//TODO: middleware auth + timeout context
