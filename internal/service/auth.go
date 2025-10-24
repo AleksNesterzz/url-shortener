@@ -3,6 +3,6 @@ package service
 type AuthService struct {
 }
 
-func New() *AuthService {
+func NewAuth() *AuthService {
 	return &AuthService{}
 }
