@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,14 +32,30 @@ func main() {
 
 	sig := make(chan os.Signal, 1)
 
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: router,
+	}
 
 	go func() {
-		time.Sleep(5 * time.Second)
-		<-sig
-		storage.Save()
+		logger.Info("HTTP server is starting on :8080")
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Error("Failed to start HTTP server: " + err.Error())
+		}
 	}()
-	//TODO: Add timeout wrapper/middleware
-	router.Run()
+
+	<-sig
+	logger.Info("Shutdown signal received")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Error("HTTP server shutdown error: " + err.Error())
+	} else {
+		logger.Info("HTTP server stopped gracefully")
+	}
 
 }

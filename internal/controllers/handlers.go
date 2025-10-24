@@ -13,6 +13,7 @@ type CreateRequest struct {
 }
 type UserHandler struct {
 	user *service.UrlShortener
+	auth *service.Auth //??
 }
 
 func New(u *service.UrlShortener) *UserHandler {

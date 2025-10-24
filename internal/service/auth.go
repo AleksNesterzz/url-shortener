@@ -1,8 +1,8 @@
 package service
 
-type AuthService struct {
+type Auth struct {
 }
 
-func NewAuth() *AuthService {
-	return &AuthService{}
+func NewAuth() *Auth {
+	return &Auth{}
 }
