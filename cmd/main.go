@@ -35,8 +35,10 @@ func main() {
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	srv := &http.Server{
-		Addr:    ":8080",
-		Handler: router,
+		Addr:         ":8080",
+		Handler:      router,
+		ReadTimeout:  2 * time.Second,
+		WriteTimeout: 5 * time.Second,
 	}
 
 	go func() {
