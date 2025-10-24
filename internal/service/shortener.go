@@ -22,17 +22,20 @@ func New(logger logger.Logger, storage storage.Storage, validator validator.Vali
 }
 
 func (s *UrlShortener) Create(url string) (string, error) {
-	s.logger.Info("creating short url")
+	s.logger.Info("creating short url for" + url)
 	result := s.validator.Validate(url)
+
 	if !result.IsValid {
 		s.logger.Error("url is invalid")
 		s.logger.Error(result.Error)
 		return "", fmt.Errorf("invalid url")
 	}
+
 	if len(result.Warnings) != 0 {
 		s.logger.Warn("url have some warnings")
 		s.logger.Warn(result.WarnString())
 	}
+
 	short, err := s.storage.Create(url)
 	if err != nil {
 		s.logger.Error("creating url error")
@@ -42,7 +45,7 @@ func (s *UrlShortener) Create(url string) (string, error) {
 }
 
 func (s *UrlShortener) Get(url string) (string, error) {
-	s.logger.Info("getting url")
+	s.logger.Info("getting url " + url)
 	long, err := s.storage.Get(url)
 	if err != nil {
 		s.logger.Error("getting url error")
@@ -52,7 +55,7 @@ func (s *UrlShortener) Get(url string) (string, error) {
 }
 
 func (s *UrlShortener) Delete(url string) error {
-	s.logger.Info("deleting url")
+	s.logger.Info("deleting url " + url)
 	err := s.storage.Delete(url)
 	if err != nil {
 		s.logger.Error("error deleting url")
