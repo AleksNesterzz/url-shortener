@@ -19,6 +19,8 @@ type ValidationResult struct {
 	Normalized string ///?
 }
 
+type StringArr []string
+
 type URLValidator struct {
 	allowedSchemes map[string]bool
 	allowedTLDs    map[string]bool
@@ -46,6 +48,10 @@ func NewUrlValidator() *URLValidator {
 		maxLength: 2048,
 		minLength: 10,
 	}
+}
+
+func (sArr StringArr) String() string {
+	return strings.Join([]string(sArr), ",")
 }
 
 func (v *URLValidator) Validate(rawUrl string) ValidationResult {

@@ -2,27 +2,36 @@ package service
 
 import (
 	"fmt"
-	"strings"
 	"urlshortner/internal/logger"
 	"urlshortner/internal/storage"
+	"urlshortner/internal/validator"
 )
 
 type UrlShortener struct {
-	logger  logger.Logger
-	storage storage.Storage
+	validator validator.Validator
+	logger    logger.Logger
+	storage   storage.Storage
 }
 
-func New(logger logger.Logger, storage storage.Storage) *UrlShortener {
+func New(logger logger.Logger, storage storage.Storage, validator validator.Validator) *UrlShortener {
 	return &UrlShortener{
-		logger:  logger,
-		storage: storage,
+		logger:    logger,
+		storage:   storage,
+		validator: validator,
 	}
 }
 
 func (s *UrlShortener) Create(url string) (string, error) {
-	s.logger.Info("creating url")
-	if !validateUrl(url) {
+	s.logger.Info("creating short url")
+	result := s.validator.Validate(url)
+	if !result.IsValid {
+		s.logger.Error("url is invalid")
+		s.logger.Error(validator.StringArr(result.Errors).String())
 		return "", fmt.Errorf("invalid url")
+	}
+	if len(result.Warnings) != 0 {
+		s.logger.Warn("url have some warnings")
+		s.logger.Warn(validator.StringArr(result.Warnings).String())
 	}
 	short, err := s.storage.Create(url)
 	if err != nil {
@@ -50,11 +59,4 @@ func (s *UrlShortener) Delete(url string) error {
 		return err
 	}
 	return nil
-}
-
-func validateUrl(url string) bool {
-	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://") {
-		return false
-	}
-	return true
 }

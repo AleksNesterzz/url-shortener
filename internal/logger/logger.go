@@ -10,6 +10,7 @@ type Logger interface {
 	Info(string)
 	Debug(string)
 	Error(string)
+	Warn(string)
 }
 
 type StdLogger struct {
@@ -38,4 +39,8 @@ func (s *StdLogger) Debug(msg string) {
 
 func (s *StdLogger) Error(msg string) {
 	s.logger.Error(msg)
+}
+
+func (s *StdLogger) Warn(msg string) {
+	s.logger.Warn(msg)
 }

@@ -9,6 +9,7 @@ import (
 	"urlshortner/internal/logger"
 	"urlshortner/internal/service"
 	"urlshortner/internal/storage"
+	"urlshortner/internal/validator"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +17,8 @@ import (
 func main() {
 	logger := logger.New()
 	storage := storage.New()
-	service := service.New(logger, storage)
+	validator := validator.NewUrlValidator()
+	service := service.New(logger, storage, validator)
 
 	handlers := handlers.New(service)
 
