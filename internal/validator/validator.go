@@ -14,7 +14,7 @@ type Validator interface {
 
 type ValidationResult struct {
 	IsValid    bool
-	Errors     []string
+	Error      string
 	Warnings   []string
 	Normalized string ///?
 }
@@ -50,28 +50,28 @@ func NewUrlValidator() *URLValidator {
 	}
 }
 
-func (sArr StringArr) String() string {
-	return strings.Join([]string(sArr), ",")
+func (v ValidationResult) WarnString() string {
+	return strings.Join([]string(v.Warnings), ",")
 }
 
 func (v *URLValidator) Validate(rawUrl string) ValidationResult {
 	result := ValidationResult{
 		IsValid:  false,
-		Errors:   []string{},
 		Warnings: []string{},
 	}
 	if len(rawUrl) > v.maxLength {
-		result.Errors = append(result.Errors, fmt.Sprintf("URL too long: %d", len(rawUrl)))
+		result.Error = fmt.Sprintf("URL too long: %d", len(rawUrl))
 		return result
 	}
 
 	if len(rawUrl) < v.minLength {
-		result.Errors = append(result.Errors, fmt.Sprintf("URL too short: %d", len(rawUrl)))
+		result.Error = fmt.Sprintf("URL too short: %d", len(rawUrl))
+		return result
 	}
 
 	normalized, err := v.normalizeURL(rawUrl)
 	if err != nil {
-		result.Errors = append(result.Errors, err.Error())
+		result.Error = err.Error()
 		return result
 	}
 
@@ -79,22 +79,22 @@ func (v *URLValidator) Validate(rawUrl string) ValidationResult {
 
 	parsed, err := url.Parse(normalized)
 	if err != nil {
-		result.Errors = append(result.Errors, err.Error())
+		result.Error = err.Error()
 		return result
 	}
 
 	if err := v.validateScheme(parsed); err != nil {
-		result.Errors = append(result.Errors, err.Error())
+		result.Error = err.Error()
 		return result
 	}
 
 	if err := v.validateHost(parsed); err != nil {
-		result.Errors = append(result.Errors, err.Error())
+		result.Error = err.Error()
 		return result
 	}
 
 	if ok := v.isPhishingLike(parsed.Host); ok {
-		result.Errors = append(result.Errors, fmt.Errorf("phishing-like url").Error())
+		result.Error = fmt.Errorf("phishing-like url").Error()
 		return result
 	}
 

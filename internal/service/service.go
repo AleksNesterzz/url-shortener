@@ -26,12 +26,12 @@ func (s *UrlShortener) Create(url string) (string, error) {
 	result := s.validator.Validate(url)
 	if !result.IsValid {
 		s.logger.Error("url is invalid")
-		s.logger.Error(validator.StringArr(result.Errors).String())
+		s.logger.Error(result.Error)
 		return "", fmt.Errorf("invalid url")
 	}
 	if len(result.Warnings) != 0 {
 		s.logger.Warn("url have some warnings")
-		s.logger.Warn(validator.StringArr(result.Warnings).String())
+		s.logger.Warn(result.WarnString())
 	}
 	short, err := s.storage.Create(url)
 	if err != nil {
