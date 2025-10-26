@@ -19,7 +19,7 @@ import (
 func main() {
 	logger := logger.New()
 	storage := storage.New()
-	validator := validator.NewUrlValidator()
+	validator := validator.New()
 	urlService := service.NewUrlShortener(logger, storage, validator)
 	authService := service.NewAuth()
 	s := handlers.NewUserHandler(urlService)
@@ -27,6 +27,9 @@ func main() {
 
 	router := gin.Default()
 	//TODO: middleware auth
+	router.POST("/register", auth.Register)
+	router.POST("/login", auth.Login)
+	router.POST("/logout", auth.Logout)
 	router.POST("/create/", s.CreateShortUrl)
 	router.GET("/get/:id", s.GetLongUrl)
 	router.DELETE("/delete/:id", s.DeleteUrl)

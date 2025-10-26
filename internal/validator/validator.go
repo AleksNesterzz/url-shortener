@@ -29,7 +29,7 @@ type URLValidator struct {
 	minLength      int
 }
 
-func NewUrlValidator() *URLValidator {
+func New() *URLValidator {
 	return &URLValidator{
 		allowedSchemes: map[string]bool{
 			"http":  true,

@@ -29,3 +29,11 @@ func (a *AuthHandler) Register(c *gin.Context) {
 	}
 	a.auth.Register()
 }
+
+func (a *AuthHandler) Login(c *gin.Context) {
+
+}
+
+func (a *AuthHandler) Logout(c *gin.Context) {
+
+}
