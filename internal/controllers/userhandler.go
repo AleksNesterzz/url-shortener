@@ -11,6 +11,18 @@ import (
 type CreateRequest struct {
 	Url string `json:"url"`
 }
+
+type CreateResponse struct {
+}
+
+type GetLongUrlResponse struct {
+}
+
+type DeleteRequest struct {
+}
+
+type DeleteResponse struct {
+}
 type UserHandler struct {
 	user *service.UrlShortener
 }

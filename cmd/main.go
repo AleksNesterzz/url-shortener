@@ -23,7 +23,7 @@ func main() {
 	storageUser := storage.NewInMemoryUser()
 	validator := validator.New()
 	urlService := service.NewUrlShortener(logger, storageURL, validator)
-	authService := service.NewAuth(storageUser)
+	authService := service.NewAuth(storageUser, logger)
 	s := handlers.NewUserHandler(urlService)
 	auth := handlers.NewAuthHandler(authService)
 
