@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 )
 
 // TODO: Change constant storage for redis storage
@@ -23,10 +24,11 @@ type shortUrl string
 type longUrl string
 
 type InMemoryURLs struct {
+	m     sync.Mutex
 	cache map[shortUrl]longUrl
 }
 
-func New() *InMemoryURLs {
+func NewInMemoryURLs() *InMemoryURLs {
 	storage := make(map[shortUrl]longUrl)
 	file, err := os.OpenFile("../backup.txt", os.O_RDONLY, 0666)
 	if err != nil {
@@ -49,11 +51,15 @@ func New() *InMemoryURLs {
 
 func (s *InMemoryURLs) Create(url string) (string, error) {
 	hash := getMD5Hash(url)
+	s.m.Lock()
+	defer s.m.Unlock()
 	s.cache[shortUrl(hash)] = longUrl(url)
 	return hash, nil
 }
 
 func (s *InMemoryURLs) Get(url string) (string, error) {
+	s.m.Lock()
+	defer s.m.Unlock()
 	result, ok := s.cache[shortUrl(url)]
 	if !ok {
 		return "", fmt.Errorf("invalid url")
@@ -62,6 +68,8 @@ func (s *InMemoryURLs) Get(url string) (string, error) {
 }
 
 func (s *InMemoryURLs) Delete(url string) error {
+	s.m.Lock()
+	defer s.m.Unlock()
 	if _, ok := s.cache[shortUrl(url)]; !ok {
 		return fmt.Errorf("no such url")
 	}
@@ -69,6 +77,7 @@ func (s *InMemoryURLs) Delete(url string) error {
 	return nil
 }
 
+// Do i really need this method?
 func (s *InMemoryURLs) Save() error {
 	file, err := os.OpenFile("../backup.txt", os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {

@@ -8,7 +8,11 @@ import (
 )
 
 type RegisterRequest struct {
-	Login    string `json:"login"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -27,11 +31,16 @@ func (a *AuthHandler) Register(c *gin.Context) {
 	if err != nil {
 		c.Writer.Write([]byte(err.Error()))
 	}
-	a.auth.Register()
+	a.auth.Register(reg.Email, reg.Password)
 }
 
 func (a *AuthHandler) Login(c *gin.Context) {
-
+	var log LoginRequest
+	err := json.NewDecoder(c.Request.Body).Decode(&log)
+	if err != nil {
+		c.Writer.Write([]byte(err.Error()))
+	}
+	a.auth.Login(log.Email, log.Password)
 }
 
 func (a *AuthHandler) Logout(c *gin.Context) {

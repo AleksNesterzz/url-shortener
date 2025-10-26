@@ -19,10 +19,11 @@ import (
 
 func main() {
 	logger := logger.New()
-	storage := storage.New()
+	storageURL := storage.NewInMemoryURLs()
+	storageUser := storage.NewInMemoryUser()
 	validator := validator.New()
-	urlService := service.NewUrlShortener(logger, storage, validator)
-	authService := service.NewAuth()
+	urlService := service.NewUrlShortener(logger, storageURL, validator)
+	authService := service.NewAuth(storageUser)
 	s := handlers.NewUserHandler(urlService)
 	auth := handlers.NewAuthHandler(authService)
 

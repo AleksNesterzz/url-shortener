@@ -10,14 +10,14 @@ func NewAuth(u storage.UserRepository) *Auth {
 	return &Auth{user: u}
 }
 
-func (a *Auth) Register() {
-
+func (a *Auth) Register(email string, password string) {
+	a.user.Register(email, password)
 }
 
-func (a *Auth) Login() {
-
+func (a *Auth) Login(email string, pass string) {
+	a.user.Login(email, pass)
 }
 
-func (a *Auth) Logout() {
-
-}
+// func (a *Auth) Logout() {
+// 	//a.user.Logout()
+// }
