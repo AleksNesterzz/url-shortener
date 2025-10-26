@@ -1,0 +1,47 @@
+package service
+
+import (
+	"urlshortner/internal/logger"
+	"urlshortner/internal/storage"
+
+	"golang.org/x/crypto/bcrypt"
+)
+
+type Auth struct {
+	logger logger.Logger
+	user   storage.UserRepository
+}
+
+func NewAuth(u storage.UserRepository, logger logger.Logger) *Auth {
+	return &Auth{
+		user:   u,
+		logger: logger,
+	}
+}
+
+func (a *Auth) Register(email string, password string) error {
+	a.logger.Info("registering user: " + email)
+	err := a.user.Register(email, password)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *Auth) Login(email string, pass string) error {
+	a.logger.Info("logging in user: " + email)
+	hash, err := bcrypt.GenerateFromPassword([]byte(pass), 12)
+	if err != nil {
+		a.logger.Error("pass not generated:" + err.Error())
+	}
+	err = a.user.Login(email, string(hash))
+	if err != nil {
+		a.logger.Error("login error occured:" + err.Error())
+		return err
+	}
+	return nil
+}
+
+// func (a *Auth) Logout() {
+// 	//a.user.Logout()
+// }
