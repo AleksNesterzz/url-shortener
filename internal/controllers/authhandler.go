@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	service "urlshortner/internal/service/auth"
+	"urlshortner/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
