@@ -10,10 +10,10 @@ import (
 type UrlShortener struct {
 	validator validator.Validator
 	logger    logger.Logger
-	storage   storage.Storage
+	storage   storage.URLRepository
 }
 
-func New(logger logger.Logger, storage storage.Storage, validator validator.Validator) *UrlShortener {
+func NewUrlShortener(logger logger.Logger, storage storage.URLRepository, validator validator.Validator) *UrlShortener {
 	return &UrlShortener{
 		logger:    logger,
 		storage:   storage,
@@ -21,6 +21,7 @@ func New(logger logger.Logger, storage storage.Storage, validator validator.Vali
 	}
 }
 
+// should return domain.URL here or something else custom
 func (s *UrlShortener) Create(url string) (string, error) {
 	s.logger.Info("creating short url for" + url)
 	result := s.validator.Validate(url)

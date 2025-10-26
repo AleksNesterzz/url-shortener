@@ -191,7 +191,6 @@ func (v *URLValidator) validateHost(parsed *url.URL) error {
 		return fmt.Errorf("host is required")
 	}
 
-	// Проверка IP адресов
 	if ip := net.ParseIP(parsed.Host); ip != nil {
 		if v.isPrivateIP(ip) {
 			return fmt.Errorf("private IP addresses are not allowed")

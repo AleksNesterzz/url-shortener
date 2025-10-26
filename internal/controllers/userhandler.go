@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"urlshortner/internal/service"
+	service "urlshortner/internal/service/url"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,10 +13,9 @@ type CreateRequest struct {
 }
 type UserHandler struct {
 	user *service.UrlShortener
-	auth *service.Auth //??
 }
 
-func New(u *service.UrlShortener) *UserHandler {
+func NewUserHandler(u *service.UrlShortener) *UserHandler {
 	return &UserHandler{user: u}
 }
 

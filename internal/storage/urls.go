@@ -10,7 +10,9 @@ import (
 	"strings"
 )
 
-type Storage interface {
+// TODO: Change constant storage for redis storage
+// Do we really need to store every url, or url can be TTLed?
+type URLRepository interface {
 	Get(url string) (string, error)
 	Create(url string) (string, error)
 	Delete(url string) error
@@ -20,15 +22,15 @@ type Storage interface {
 type shortUrl string
 type longUrl string
 
-type InMemory struct {
+type InMemoryURLs struct {
 	cache map[shortUrl]longUrl
 }
 
-func New() *InMemory {
+func New() *InMemoryURLs {
 	storage := make(map[shortUrl]longUrl)
 	file, err := os.OpenFile("../backup.txt", os.O_RDONLY, 0666)
 	if err != nil {
-		return &InMemory{cache: storage}
+		return &InMemoryURLs{cache: storage}
 	}
 	defer file.Close()
 	r := bufio.NewReader(file)
@@ -40,18 +42,18 @@ func New() *InMemory {
 		parts := strings.Split(str, ":")
 		storage[shortUrl(parts[0])] = longUrl(parts[1] + ":" + parts[2])
 	}
-	return &InMemory{
+	return &InMemoryURLs{
 		cache: storage,
 	}
 }
 
-func (s *InMemory) Create(url string) (string, error) {
+func (s *InMemoryURLs) Create(url string) (string, error) {
 	hash := getMD5Hash(url)
 	s.cache[shortUrl(hash)] = longUrl(url)
 	return hash, nil
 }
 
-func (s *InMemory) Get(url string) (string, error) {
+func (s *InMemoryURLs) Get(url string) (string, error) {
 	result, ok := s.cache[shortUrl(url)]
 	if !ok {
 		return "", fmt.Errorf("invalid url")
@@ -59,7 +61,7 @@ func (s *InMemory) Get(url string) (string, error) {
 	return string(result), nil
 }
 
-func (s *InMemory) Delete(url string) error {
+func (s *InMemoryURLs) Delete(url string) error {
 	if _, ok := s.cache[shortUrl(url)]; !ok {
 		return fmt.Errorf("no such url")
 	}
@@ -67,7 +69,7 @@ func (s *InMemory) Delete(url string) error {
 	return nil
 }
 
-func (s *InMemory) Save() error {
+func (s *InMemoryURLs) Save() error {
 	file, err := os.OpenFile("../backup.txt", os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		return err

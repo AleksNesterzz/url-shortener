@@ -20,15 +20,16 @@ func main() {
 	logger := logger.New()
 	storage := storage.New()
 	validator := validator.NewUrlValidator()
-	service := service.New(logger, storage, validator)
-
-	handlers := handlers.New(service)
+	urlService := service.NewUrlShortener(logger, storage, validator)
+	authService := service.NewAuth()
+	s := handlers.NewUserHandler(urlService)
+	auth := handlers.NewAuthHandler(authService)
 
 	router := gin.Default()
-	//TODO: middleware auth + timeout context
-	router.POST("/create/", handlers.CreateShortUrl)
-	router.GET("/get/:id", handlers.GetLongUrl)
-	router.DELETE("/delete/:id", handlers.DeleteUrl)
+	//TODO: middleware auth
+	router.POST("/create/", s.CreateShortUrl)
+	router.GET("/get/:id", s.GetLongUrl)
+	router.DELETE("/delete/:id", s.DeleteUrl)
 
 	sig := make(chan os.Signal, 1)
 
