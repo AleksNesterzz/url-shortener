@@ -13,3 +13,11 @@ func NewAuth(u storage.UserRepository) *Auth {
 func (a *Auth) Register() {
 
 }
+
+func (a *Auth) Login() {
+
+}
+
+func (a *Auth) Logout() {
+
+}
