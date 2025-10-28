@@ -12,10 +12,10 @@ import (
 type Auth struct {
 	logger         logger.Logger
 	user           storage.UserRepository
-	tokenGenerator token.TokenRepository
+	tokenGenerator token.TokenGenerator
 }
 
-func NewAuth(u storage.UserRepository, logger logger.Logger, token token.TokenRepository) *Auth {
+func NewAuth(u storage.UserRepository, logger logger.Logger, token token.TokenGenerator) *Auth {
 	return &Auth{
 		user:           u,
 		logger:         logger,
@@ -51,7 +51,7 @@ func (a *Auth) Login(email string, pass string) (string, error) {
 		Email:        email,
 		PasswordHash: string(hash),
 	}
-	token, err := a.tokenGenerator.GenerateAccessToken(user)
+	token, err := a.tokenGenerator.GenerateAccessToken(&user)
 	if err != nil {
 		a.logger.Error("jwt generating error:" + err.Error())
 		return "", err
