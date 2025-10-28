@@ -9,7 +9,9 @@ import (
 	"time"
 	handlers "urlshortner/internal/controllers"
 	"urlshortner/internal/logger"
-	"urlshortner/internal/service"
+	auth "urlshortner/internal/service/auth"
+	url "urlshortner/internal/service/url"
+	"urlshortner/internal/token"
 
 	"urlshortner/internal/storage"
 	"urlshortner/internal/validator"
@@ -19,11 +21,12 @@ import (
 
 func main() {
 	logger := logger.New()
+	tokenGen := &token.TokenGenerator{}
 	storageURL := storage.NewInMemoryURLs()
 	storageUser := storage.NewInMemoryUser()
 	validator := validator.New()
-	urlService := service.NewUrlShortener(logger, storageURL, validator)
-	authService := service.NewAuth(storageUser, logger)
+	urlService := url.NewUrlShortener(logger, storageURL, validator)
+	authService := auth.NewAuth(storageUser, logger, tokenGen)
 	s := handlers.NewUserHandler(urlService)
 	auth := handlers.NewAuthHandler(authService)
 

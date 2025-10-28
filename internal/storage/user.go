@@ -3,13 +3,16 @@ package storage
 import (
 	"fmt"
 	"sync"
+	"urlshortner/models"
 )
 
 type UserRepository interface {
-	Register(email, password string) error
-	Login(email, pass string) error
+	Register(user models.User) error
+	Login(user models.User) error
 	//Logout()
 }
+
+//adjust logic with models.user
 
 type InMemoryUser struct {
 	m     sync.Mutex
@@ -22,24 +25,24 @@ func NewInMemoryUser() *InMemoryUser {
 	}
 }
 
-func (u *InMemoryUser) Register(email, password string) error {
+func (u *InMemoryUser) Register(user models.User) error {
 	u.m.Lock()
 	defer u.m.Unlock()
-	if _, ok := u.users[email]; ok {
+	if _, ok := u.users[user.Email]; ok {
 		return fmt.Errorf("user with such email is already exists")
 	}
-	u.users[email] = password
+	u.users[user.Email] = user.PasswordHash
 	return nil
 }
 
-func (u *InMemoryUser) Login(email, pass string) error {
+func (u *InMemoryUser) Login(user models.User) error {
 	u.m.Lock()
 	defer u.m.Unlock()
-	hash, ok := u.users[email]
+	hash, ok := u.users[user.Email]
 	if !ok {
 		return fmt.Errorf("such user doesn't exist")
 	}
-	if hash != pass {
+	if hash != user.PasswordHash {
 		return fmt.Errorf("password is incorrect")
 	}
 	return nil
