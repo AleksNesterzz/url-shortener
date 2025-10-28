@@ -13,16 +13,16 @@ import (
 
 type TokenGenerator interface {
 	GenerateAccessToken(*models.User) (string, error)
-	ValidateToken(string) (*models.TokenClaims, error)
+	VerifyToken(string) (*models.TokenClaims, error)
 	ParseTokenClaims(string) (*models.TokenClaims, error)
 	//GenerateRefreshToken(*models.User) (string, error)
 }
 
 type JWTGenerator struct {
-	secretKey          []byte
-	accessTokenExpiry  time.Duration
-	refreshTokenExpiry time.Duration
-	issuer             string
+	secretKey         []byte
+	accessTokenExpiry time.Duration
+	//refreshTokenExpiry time.Duration
+	issuer string
 }
 
 type JWTClaims struct {
@@ -32,20 +32,16 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func NewJWTGenerator(secretKey string, accessTokenExpiry, refreshTokenExpiry time.Duration, issuer string) (*JWTGenerator, error) {
+func NewJWTGenerator(secretKey string, accessTokenExpiry time.Duration, issuer string) (*JWTGenerator, error) {
 	if secretKey == "" {
 		return nil, fmt.Errorf("secret key cannot be empty")
 	}
 	return &JWTGenerator{
-		secretKey:          []byte(secretKey),
-		accessTokenExpiry:  accessTokenExpiry,
-		refreshTokenExpiry: refreshTokenExpiry,
-		issuer:             issuer,
+		secretKey:         []byte(secretKey),
+		accessTokenExpiry: accessTokenExpiry,
+		issuer:            issuer,
 	}, nil
 }
-
-// hide in .env
-var secretKey = []byte("mysecret")
 
 func (g *JWTGenerator) GenerateAccessToken(user *models.User) (string, error) {
 	if user == nil {
@@ -69,11 +65,11 @@ func (g *JWTGenerator) GenerateAccessToken(user *models.User) (string, error) {
 	return token.SignedString(g.secretKey)
 }
 
-func (g *JWTGenerator) VerifyToken(tokenString string) (*JWTClaims, error) {
+func (g *JWTGenerator) VerifyToken(tokenString string) (*models.TokenClaims, error) {
 	claims := &JWTClaims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return secretKey, nil
+		return g.secretKey, nil
 	})
 	if err != nil {
 		return nil, err
@@ -81,7 +77,14 @@ func (g *JWTGenerator) VerifyToken(tokenString string) (*JWTClaims, error) {
 	if !token.Valid {
 		return nil, fmt.Errorf("invalid token")
 	}
-	return claims, nil
+	//??
+	tClaims := &models.TokenClaims{
+		UserID:    claims.UserID,
+		Email:     claims.Email,
+		IssuedAt:  claims.IssuedAt.Time,
+		ExpiresAt: claims.ExpiresAt.Time,
+	}
+	return tClaims, nil
 }
 
 func (g *JWTGenerator) GenerateRefreshToken(user models.User) (string, error) {

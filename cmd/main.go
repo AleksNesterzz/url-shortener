@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"urlshortner/config"
 	handlers "urlshortner/internal/controllers"
 	"urlshortner/internal/logger"
 	auth "urlshortner/internal/service/auth"
@@ -21,7 +22,16 @@ import (
 
 func main() {
 	logger := logger.New()
-	tokenGen := &token.TokenGenerator{}
+	cfg, err := config.Load()
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+	tokenGen, err := token.NewJWTGenerator(cfg.SecretKey, cfg.AccessTokenExpiry, cfg.Issuer)
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
 	storageURL := storage.NewInMemoryURLs()
 	storageUser := storage.NewInMemoryUser()
 	validator := validator.New()

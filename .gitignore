@@ -2,3 +2,4 @@ go.sum
 urls.txt
 app.log
 backup.txt
+.env
