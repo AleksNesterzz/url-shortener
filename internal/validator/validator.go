@@ -98,6 +98,7 @@ func (v *URLValidator) Validate(rawUrl string) ValidationResult {
 		return result
 	}
 
+	result.IsValid = true
 	return result
 }
 

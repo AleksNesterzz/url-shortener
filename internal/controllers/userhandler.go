@@ -13,6 +13,7 @@ type CreateRequest struct {
 }
 
 type CreateResponse struct {
+	ShortURL string `json:"short_url"`
 }
 
 type GetLongUrlResponse struct {
@@ -41,7 +42,10 @@ func (u *UserHandler) CreateShortUrl(c *gin.Context) {
 	if err != nil {
 		c.Writer.Write([]byte(err.Error()))
 	}
-	c.Writer.Write([]byte(short))
+	resp := CreateResponse{
+		ShortURL: short,
+	}
+	c.JSON(200, resp)
 
 }
 

@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	Register(user models.User) error
 	Login(user models.User) error
+	GetHashByEmail(user models.User) (string, error)
 	//Logout()
 }
 
@@ -38,16 +39,23 @@ func (u *InMemoryUser) Register(user models.User) error {
 func (u *InMemoryUser) Login(user models.User) error {
 	u.m.Lock()
 	defer u.m.Unlock()
-	hash, ok := u.users[user.Email]
+	_, ok := u.users[user.Email]
 	if !ok {
 		return fmt.Errorf("such user doesn't exist")
-	}
-	if hash != user.PasswordHash {
-		return fmt.Errorf("password is incorrect")
 	}
 	return nil
 }
 
 func (u *InMemoryUser) Logout() {
 
+}
+
+func (a *InMemoryUser) GetHashByEmail(user models.User) (string, error) {
+	a.m.Lock()
+	defer a.m.Unlock()
+	hash, ok := a.users[user.Email]
+	if !ok {
+		return "", fmt.Errorf("such email didn't exist")
+	}
+	return hash, nil
 }

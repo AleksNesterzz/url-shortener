@@ -10,6 +10,7 @@ import (
 	"urlshortner/config"
 	handlers "urlshortner/internal/controllers"
 	"urlshortner/internal/logger"
+	middleware "urlshortner/internal/middlewares"
 	auth "urlshortner/internal/service/auth"
 	url "urlshortner/internal/service/url"
 	"urlshortner/internal/token"
@@ -45,9 +46,9 @@ func main() {
 	router.POST("/register", auth.Register)
 	router.POST("/login", auth.Login)
 	router.POST("/logout", auth.Logout)
-	router.POST("/create/", s.CreateShortUrl)
-	router.GET("/get/:id", s.GetLongUrl)
-	router.DELETE("/delete/:id", s.DeleteUrl)
+	router.POST("/create/", middleware.AuthMiddleware(tokenGen), s.CreateShortUrl)
+	router.GET("/get/:id", middleware.AuthMiddleware(tokenGen), s.GetLongUrl)
+	router.DELETE("/delete/:id", middleware.AuthMiddleware(tokenGen), s.DeleteUrl)
 
 	sig := make(chan os.Signal, 1)
 

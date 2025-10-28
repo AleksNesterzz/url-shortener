@@ -43,14 +43,18 @@ func (a *Auth) Register(email string, password string) error {
 
 func (a *Auth) Login(email string, pass string) (string, error) {
 	a.logger.Info("logging in user: " + email)
-	hash, err := bcrypt.GenerateFromPassword([]byte(pass), 12)
-	if err != nil {
-		a.logger.Error("pass not generated:" + err.Error())
-	}
 	user := models.User{
-		Email:        email,
-		PasswordHash: string(hash),
+		Email: email,
 	}
+	hash, err := a.user.GetHashByEmail(user)
+	if err != nil {
+		return "", err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(pass))
+	if err != nil {
+		a.logger.Error("password not correct:" + err.Error())
+	}
+
 	token, err := a.tokenGenerator.GenerateAccessToken(&user)
 	if err != nil {
 		a.logger.Error("jwt generating error:" + err.Error())
