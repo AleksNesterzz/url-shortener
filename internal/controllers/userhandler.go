@@ -16,14 +16,6 @@ type CreateResponse struct {
 	ShortURL string `json:"short_url"`
 }
 
-type GetLongUrlResponse struct {
-}
-
-type DeleteRequest struct {
-}
-
-type DeleteResponse struct {
-}
 type UserHandler struct {
 	user *service.UrlShortener
 }
@@ -62,5 +54,5 @@ func (u *UserHandler) GetLongUrl(c *gin.Context) {
 func (u *UserHandler) DeleteUrl(c *gin.Context) {
 	url := c.Param("id")
 	u.user.Delete(url)
-	c.JSON(http.StatusNoContent, gin.H{})
+	c.JSON(http.StatusNoContent, gin.H{"status": "url has been successfully deleted"})
 }
